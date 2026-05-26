@@ -37,16 +37,21 @@ export function validateStepProperties(
 ): FieldErrors {
     const errors: FieldErrors = {}
     const visible = visibleProperties(definitions, values)
-    const visibleIds = new Set(visible.map((d) => d.id))
 
-    for (const [id, value] of Object.entries(values).map(([k, v]) => [Number(k), v] as const)) {
-        console.log(value !== null, value !== '', value !== undefined, !visibleIds.has(id))
+    // Skip non-empty input check for invisible fields, e.g., when setting authomatic unscrewing
+    // and still having the coordinates in buffer. The buildPropertyValuePayload in frontend/src/components/StepModal.tsx
+    // constructs visibleProperties of only visible fields, thus skipping old values persisting in DOM
+    
+    // const visibleIds = new Set(visible.map((d) => d.id))
+
+    // for (let [id, value] of Object.entries(values).map(([k, v]) => [Number(k), v] as const)) {
+    //     console.log(value !== null, value !== '', value !== undefined, !visibleIds.has(id))
         
-        if (value !== null && value !== '' && value !== undefined && !visibleIds.has(id)) {
-                const def = definitions.find((d) => d.id === id)
-                if (def) errors[def.key] = `The value ${value} is not applicable for current configuration.`
-        }
-    }
+    //     if (value !== null && value !== '' && value !== undefined && !visibleIds.has(id)) {
+    //         const def = definitions.find((d) => d.id === id)
+    //         if (def) errors[def.key] = `The value ${value} is not applicable for current configuration.`
+    //     }
+    // }
 
     for (const def of visible) {
         const raw = values[def.id] ?? ''
