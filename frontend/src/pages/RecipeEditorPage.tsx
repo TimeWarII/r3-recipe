@@ -49,7 +49,7 @@ export default function RecipeEditorPage({ recipe: initialRecipe, onSaved, onImp
     // Load the initial JSON preview in edit mode
     useEffect(() => {
         if (!isCreating && recipeId) {
-            setLoadingPreview(true)
+            setLoadingPreview(true) // eslint-disable-line react-hooks/set-state-in-effect
             recipesApi.export(recipeId)
                 .then((res) => setJsonPreview(res.data))
                 .finally(() => setLoadingPreview(false))

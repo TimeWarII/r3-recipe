@@ -29,7 +29,10 @@ export default function StepModal({ stepTypes, existingStep, onConfirm, onClose 
 
     // Populate defaults or existing values when type is set
     useEffect(() => {
-        if (!selectedType) { setValues({}); return }
+        if (!selectedType) {
+            // replace state with an empty object when the selectedType is null
+            setValues({}); return   // eslint-disable-line react-hooks/set-state-in-effect
+        }
         const initial: Record<number, string> = {}
         for (const def of selectedType.property_definitions) {
             if (isEditing && existingStep) {

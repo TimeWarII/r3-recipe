@@ -23,7 +23,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         const token = localStorage.getItem('access_token')
-        if (!token) { setLoading(false); return }
+        if (!token) {
+            setLoading(false); return    // eslint-disable-line react-hooks/set-state-in-effect
+        }
         authApi.me()
             .then((res) => setUser(res.data))
             .catch(() => localStorage.removeItem('access_token'))
@@ -50,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     )
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
     const ctx = useContext(AuthContext)
     if (!ctx) throw new Error('useAuth must be used within AuthProvider')
