@@ -107,7 +107,15 @@ def import_recipe(
         )
     except ValidationError as exc:
         db.rollback()
+        # Flatten to a single readable string rather than a dict –
+        # otherwise the front-end's handlePopulateFromJson and handleImport
+        # throw a nondescript
+        # "Failed to import recipe. Check the file format and try again."
+        messages = [
+            f"{field}: {msgs[0] if isinstance(msgs, list) else msgs}"
+            for field, msgs in exc.errors.items()
+        ]
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=exc.errors,
+            detail=", ".join(messages),
         )
