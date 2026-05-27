@@ -12,6 +12,7 @@ from app.schemas.recipe import (
         RecipeExportOut,
         RecipeExportStepOut
     )
+from app.services.validation import ValidationError
 from app.services.step_service import create_step
 
 
@@ -220,10 +221,15 @@ def import_recipe(
     recipe = Recipe(
         name=payload.name,
         description=payload.description,
-        user_id=user_id,
-    )
+        user_id=user_id)
     db.add(recipe)
     db.flush()
+
+    # Collect all errors rather than early-exit with ValidationError –
+    # – helps the user navigate and fix their faulty input file; ideally,
+    # we would want to also point to a specific line triggering this;
+    # so far we only specify the step index, 0-based
+    all_errors: dict[str, list[str]] = {}
 
     for step_in in sorted(payload.steps, key=lambda s: s.order):
         st = st_map[step_in.step_type]
@@ -231,14 +237,14 @@ def import_recipe(
 
         unknown_keys = set(step_in.properties) - key_to_id.keys()
         if unknown_keys:
-            raise ValueError(
-                f"Step type '{step_in.step_type}' has no property key(s): "
-                f"{', '.join(sorted(unknown_keys))}"
-            )
+            for k in unknown_keys:
+                all_errors.setdefault(k, []).append(
+                    f"Step type '{step_in.step_type}' has no property '{k}'."
+                )
+            continue  # skip creating this step, move to next
 
         pv_map = {key_to_id[k]: v for k, v in step_in.properties.items()}
 
-        # Reuse the existing create_step which runs validation
         from app.schemas.recipe import RecipeStepIn, StepPropertyValueIn
         step_payload = RecipeStepIn(
             step_type_id=st.id,
@@ -247,10 +253,19 @@ def import_recipe(
                 for pd_id, val in pv_map.items()
             ],
         )
-        create_step(db, recipe.id, step_payload, order=step_in.order)
+
+        try:
+            create_step(db, recipe.id, step_payload, order=step_in.order)
+        except ValidationError as exc:
+            # Prefix each key with the step order for clarity
+            for key, msgs in exc.errors.items():
+                prefixed = f"step {step_in.order} — {key}"
+                all_errors.setdefault(prefixed, []).extend(msgs)
+
+    if all_errors:
+        db.rollback()
+        raise ValidationError(all_errors)
 
     db.commit()
     db.refresh(recipe)
-    return _attach_creator(
-        _recipe_with_detail(db, recipe.id)  # type: ignore[arg-type]
-    )
+    return _attach_creator(_recipe_with_detail(db, recipe.id))
