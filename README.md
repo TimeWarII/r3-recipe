@@ -13,7 +13,7 @@ The entire stack runs via Docker Compose. No local Python or Node setup required
 ```bash
 # If using Colima
 brew install colima docker docker-compose
-colima start --cpu 2 --memory 4 --disk 20
+colima start --cpu 2 --memory 2 --disk 5
 ```
 
 **Run the app:**
