@@ -140,12 +140,16 @@ def export_recipe(db: Session, recipe_id: int) -> RecipeExportOut | None:
 
     # for step in recipe.steps:
     # for pv in step.property_values:
-    #     definition = db.query(PropertyDefinition).filter(PropertyDefinition.id == pv.property_definition_id).first()
-        # ...
+    #     definition =
+    #       db.query(PropertyDefinition).filter(PropertyDefinition.id
+    #           == pv.property_definition_id).first()
 
-    # i.e., in the version that we use, we collect all the property definition id's from the result of _recipe_with_detail
-    # – no additional DB calls at this stage. When we need full definitions, we simply run the .filter(PropertyDefinition.id.in_(all_pd_ids)) query
-    # in the N+1 example, we perform a databse call for each pv.property_definition_id
+    # i.e., in the version that we use, we collect all the property definition
+    # id's from the result of _recipe_with_detail – no additional DB calls at
+    # this stage. When we need full definitions, we simply run the
+    # .filter(PropertyDefinition.id.in_(all_pd_ids)) query
+    # in the N+1 example, we perform a databse call for each
+    # pv.property_definition_id
 
     # Build a lookup for step type names
     all_st_ids = {step.step_type_id for step in recipe.steps}
