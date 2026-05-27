@@ -1,0 +1,16 @@
+{
+  "name": "Mission 2",
+  "description": "This will not fly for negative coordinate resoans",
+  "steps": [
+    {
+      "step_type": "take_image",
+      "order": 0,
+      "properties": {
+        "include_pointcloud": "true",
+        "image_type": "section",
+        "center_x": "-100",
+        "center_y": "100"
+      }
+    }
+  ]
+}

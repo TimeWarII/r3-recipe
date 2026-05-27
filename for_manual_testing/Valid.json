@@ -1,0 +1,40 @@
+{
+  "name": "Mission 1",
+  "description": "This is a valid import demo.",
+  "steps": [
+    {
+      "step_type": "take_image",
+      "order": 0,
+      "properties": {
+        "include_pointcloud": "true",
+        "image_type": "section",
+        "center_x": "12",
+        "center_y": "12"
+      }
+    },
+    {
+      "step_type": "unscrewing",
+      "order": 1,
+      "properties": {
+        "unscrewing_mode": "automatic"
+      }
+    },
+    {
+      "step_type": "take_image",
+      "order": 2,
+      "properties": {
+        "include_pointcloud": "true",
+        "image_type": "full_battery"
+      }
+    },
+    {
+      "step_type": "unscrewing",
+      "order": 3,
+      "properties": {
+        "unscrewing_mode": "specific",
+        "coord_x": "20",
+        "coord_y": "11"
+      }
+    }
+  ]
+}

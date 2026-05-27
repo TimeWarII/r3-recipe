@@ -1,5 +1,5 @@
+.DS_Store
 .DS_store
-
 .env
 .env.local
 .env.*.local
